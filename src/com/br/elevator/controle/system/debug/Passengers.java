@@ -30,6 +30,7 @@ public class Passengers extends Thread {
 	private float initialPosiont;
 	private int side;
 	public boolean boarding = true;
+	private boolean active = true;
 
 	public Passengers(Vector2 size, Vector2 position, int destiny, Graphics g, Canvas c) {
 		this.size = size;
@@ -53,7 +54,7 @@ public class Passengers extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		while (!Building.quit) {
+		while (active) {
 			long start = System.currentTimeMillis();
 
 			accumulator += deltaT;
@@ -78,10 +79,12 @@ public class Passengers extends Thread {
 				Elevation.instance.SetFill(true);
 				position.x += speed * (side * -1);
 				// move para posição inicial
-				if(side > 0 && this.position.x < this.initialPosiont || side < 0 && this.position.x > this.initialPosiont){
+				if (side > 0 && this.position.x < this.initialPosiont
+						|| side < 0 && this.position.x > this.initialPosiont) {
 					Elevation.instance.FreeElevation();
-					Elevation.CloseTheDoor();
 					currentState = stopped;
+					this.interrupt();
+					active = false;
 				}
 			} else {
 				// move para dentro do elevador
@@ -103,7 +106,7 @@ public class Passengers extends Thread {
 			break;
 		}
 		case Passengers.stopped: {
-		
+
 			break;
 		}
 		default:
